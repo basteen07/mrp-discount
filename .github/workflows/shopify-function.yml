@@ -39,7 +39,7 @@ jobs:
         env:
           SHOPIFY_CLI_TOKEN: ${{ secrets.SHOPIFY_CLI_TOKEN }}
         run: |
-          shopify app deploy --force --no-interactive
+          shopify app deploy --force 
 
       - name: Upload WASM artifact
         uses: actions/upload-artifact@v4
