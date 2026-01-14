@@ -2,7 +2,7 @@ api_version = "2025-04"
 
 [[extensions]]
 name = "t:name"
-handle = "mrp-discount-function"
+handle = "mrp_discount_function"
 type = "function"
 uid = "2b384e3f-bbb5-12e2-5362-a55f7ec52f9d10f40852"
 description = "t:description"
@@ -19,5 +19,5 @@ description = "t:description"
 
   [extensions.build]
   command = "cargo build --target=wasm32-unknown-unknown --release"
-  path = "target/wasm32-unknown-unknown/release/mrp-discount-function.wasm"
+  path = "target/wasm32-unknown-unknown/release/mrp_discount_function.wasm"
   watch = [ "src/**/*.rs" ]
