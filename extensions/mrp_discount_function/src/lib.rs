@@ -1,4 +1,2 @@
-mod schema;
-
 mod cart_lines_discounts_generate_run;
 mod cart_delivery_options_discounts_generate_run;

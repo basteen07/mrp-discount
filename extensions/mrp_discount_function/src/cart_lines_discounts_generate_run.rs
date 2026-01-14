@@ -31,7 +31,8 @@ fn cart_lines_discounts_generate_run(
             a.cost()
                 .subtotal_amount()
                 .amount()
-                .partial_cmp(b.cost().subtotal_amount().amount())
+                .0
+                .partial_cmp(&b.cost().subtotal_amount().amount().0)
                 .unwrap_or(std::cmp::Ordering::Equal)
         })
         .ok_or("No cart lines found")?;
@@ -52,23 +53,18 @@ fn cart_lines_discounts_generate_run(
     let mut operations = vec![];
 
     for line in input.cart().lines() {
-        let selling_price = Decimal::from(&line.cost().total_amount().amount());
+        let selling_price = line.cost().total_amount().amount().0;
 
-        let mrp = match line.merchandise() {
+        let mrp_value = match line.merchandise() {
             schema::cart_lines_discounts_generate_run::CartLineMerchandise::ProductVariant(variant) => {
                 variant
                     .compare_at_price()
-                    .map(|p| Decimal::from(&p.amount()))
+                    .map(|p| p.amount().0)
             }
             _ => None,
-        };
+        }.unwrap_or(0.0);
 
-        let mrp = match mrp {
-            Some(v) => v,
-            None => continue,
-        };
-
-        let discounted_mrp = mrp * Decimal::from(0.75);
+        let discounted_mrp = mrp_value * 0.75;
 
         if selling_price <= discounted_mrp {
             continue;
@@ -76,25 +72,25 @@ fn cart_lines_discounts_generate_run(
 
         let discount_amount = selling_price - discounted_mrp;
 
-        operations.push(CartOperation::ProductDiscountsAddOperation(
+        operations.push(CartOperation::ProductDiscountsAdd(
             ProductDiscountsAddOperation {
-                discount: ProductDiscountCandidate {
+                candidates: vec![ProductDiscountCandidate {
                     message: Some("25% off MRP".to_string()),
-                    targets: vec![ProductDiscountCandidateTarget::ProductVariant(
-                        ProductVariantTarget {
-                            id: line.merchandise().id().to_string(),
+                    targets: vec![ProductDiscountCandidateTarget::CartLine(
+                        CartLineTarget {
+                            id: line.id().to_string(),
                             quantity: None,
                         },
                     )],
                     value: ProductDiscountCandidateValue::FixedAmount(
-                        FixedAmountValue {
-                            amount: discount_amount,
-                            applies_to_each_item: false,
+                        ProductDiscountCandidateFixedAmount {
+                            amount: Decimal(discount_amount),
+                            appliesToEachItem: false,
                         },
                     ),
-                    once_per_order: false,
-                    selection_strategy: ProductDiscountSelectionStrategy::All,
-                },
+                    associatedDiscountCode: None,
+                }],
+                selectionStrategy: ProductDiscountSelectionStrategy::All,
             },
         ));
     }
