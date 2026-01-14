@@ -18,6 +18,6 @@ description = "t:description"
   export = "cart_delivery_options_discounts_generate_run"
 
   [extensions.build]
-  command = "shopify app function typegen && cargo build --target=wasm32-unknown-unknown --release"
+  command = "npm run function-build"
   path = "target/wasm32-unknown-unknown/release/mrp-discount-function.wasm"
   watch = [ "src/**/*.rs" ]
