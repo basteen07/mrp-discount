@@ -51,44 +51,50 @@ fn cart_lines_discounts_generate_run(
 
     let mut operations = vec![];
 
-    // Check if the discount has the ORDER class
-    if has_order_discount_class {
-        operations.push(CartOperation::OrderDiscountsAdd(
-            OrderDiscountsAddOperation {
-                selection_strategy: OrderDiscountSelectionStrategy::First,
-                candidates: vec![OrderDiscountCandidate {
-                    targets: vec![OrderDiscountCandidateTarget::OrderSubtotal(
-                        OrderSubtotalTarget {
-                            excluded_cart_line_ids: vec![],
+    for line in input.cart().lines() {
+        let selling_price = Decimal::from(&line.cost().total_amount().amount());
+
+        let mrp = match line.merchandise() {
+            schema::cart_lines_discounts_generate_run::CartLineMerchandise::ProductVariant(variant) => {
+                variant
+                    .compare_at_price()
+                    .map(|p| Decimal::from(&p.amount()))
+            }
+            _ => None,
+        };
+
+        let mrp = match mrp {
+            Some(v) => v,
+            None => continue,
+        };
+
+        let discounted_mrp = mrp * Decimal::from(0.75);
+
+        if selling_price <= discounted_mrp {
+            continue;
+        }
+
+        let discount_amount = selling_price - discounted_mrp;
+
+        operations.push(CartOperation::ProductDiscountsAddOperation(
+            ProductDiscountsAddOperation {
+                discount: ProductDiscountCandidate {
+                    message: Some("25% off MRP".to_string()),
+                    targets: vec![ProductDiscountCandidateTarget::ProductVariant(
+                        ProductVariantTarget {
+                            id: line.merchandise().id().to_string(),
+                            quantity: None,
                         },
                     )],
-                    message: Some("10% OFF ORDER".to_string()),
-                    value: OrderDiscountCandidateValue::Percentage(Percentage {
-                        value: Decimal(10.0),
-                    }),
-                    conditions: None,
-                    associated_discount_code: None,
-                }],
-            },
-        ));
-    }
-
-    // Check if the discount has the PRODUCT class
-    if has_product_discount_class {
-        operations.push(CartOperation::ProductDiscountsAdd(
-            ProductDiscountsAddOperation {
-                selection_strategy: ProductDiscountSelectionStrategy::First,
-                candidates: vec![ProductDiscountCandidate {
-                    targets: vec![ProductDiscountCandidateTarget::CartLine(CartLineTarget {
-                        id: max_cart_line.id().clone(),
-                        quantity: None,
-                    })],
-                    message: Some("20% OFF PRODUCT".to_string()),
-                    value: ProductDiscountCandidateValue::Percentage(Percentage {
-                        value: Decimal(20.0),
-                    }),
-                    associated_discount_code: None,
-                }],
+                    value: ProductDiscountCandidateValue::FixedAmount(
+                        FixedAmountValue {
+                            amount: discount_amount,
+                            applies_to_each_item: false,
+                        },
+                    ),
+                    once_per_order: false,
+                    selection_strategy: ProductDiscountSelectionStrategy::All,
+                },
             },
         ));
     }
