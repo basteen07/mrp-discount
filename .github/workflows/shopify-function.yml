@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     env:
@@ -17,29 +17,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: Cache Cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Build Shopify Function (Rust → WASM)
-        working-directory: extensions/mrp_discount_function
-        run: |
-          cargo build --release --target wasm32-unknown-unknown
-
       - name: Install Node & Shopify CLI
         run: |
           npm install -g @shopify/cli
 
-      - name: Deploy Shopify App
+      - name: Deploy Shopify App (Shopify builds WASM)
         run: |
           shopify app deploy --force
