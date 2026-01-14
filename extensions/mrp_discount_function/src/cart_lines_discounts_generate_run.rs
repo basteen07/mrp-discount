@@ -10,6 +10,7 @@ use crate::schema::OrderDiscountsAddOperation;
 use crate::schema::OrderSubtotalTarget;
 use crate::schema::Percentage;
 use crate::schema::ProductDiscountCandidate;
+use crate::schema::ProductDiscountCandidateFixedAmount;
 use crate::schema::ProductDiscountCandidateTarget;
 use crate::schema::ProductDiscountCandidateValue;
 use crate::schema::ProductDiscountSelectionStrategy;
