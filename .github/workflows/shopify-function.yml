@@ -35,11 +35,15 @@ jobs:
         run: |
           npm install -g @shopify/cli
 
-      - name: Deploy Shopify App
+      - name: Authenticate Shopify CLI (CI)
         env:
           SHOPIFY_CLI_TOKEN: ${{ secrets.SHOPIFY_CLI_TOKEN }}
         run: |
-          shopify app deploy --force 
+          shopify auth login --token "$SHOPIFY_CLI_TOKEN"
+
+      - name: Deploy Shopify App
+        run: |
+          shopify app deploy --force
 
       - name: Upload WASM artifact
         uses: actions/upload-artifact@v4
