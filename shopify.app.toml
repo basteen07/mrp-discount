@@ -1,6 +1,6 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "dfd070ca6f4db5099bcd6c231c65d142"
+client_id = "defd1923d2d333053d8fca1998402d2d"
 name = "mrp-discount"
 application_url = "https://shopify.dev/apps/default-app-home"
 embedded = true
