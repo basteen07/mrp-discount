@@ -2,13 +2,6 @@ use crate::schema::CartLineTarget;
 use crate::schema::CartLinesDiscountsGenerateRunResult;
 use crate::schema::CartOperation;
 use crate::schema::DiscountClass;
-use crate::schema::OrderDiscountCandidate;
-use crate::schema::OrderDiscountCandidateTarget;
-use crate::schema::OrderDiscountCandidateValue;
-use crate::schema::OrderDiscountSelectionStrategy;
-use crate::schema::OrderDiscountsAddOperation;
-use crate::schema::OrderSubtotalTarget;
-use crate::schema::Percentage;
 use crate::schema::ProductDiscountCandidate;
 use crate::schema::ProductDiscountCandidateFixedAmount;
 use crate::schema::ProductDiscountCandidateTarget;
@@ -54,16 +47,10 @@ fn cart_lines_discounts_generate_run(
     let mut operations = vec![];
 
     for line in input.cart().lines() {
-        let selling_price = line.cost().total_amount().amount().0;
+        let selling_price = line.cost().subtotal_amount().amount().0;
 
-        let mrp_value = match line.merchandise() {
-            schema::cart_lines_discounts_generate_run::CartLineMerchandise::ProductVariant(variant) => {
-                variant
-                    .compare_at_price()
-                    .map(|p| p.amount().0)
-            }
-            _ => None,
-        }.unwrap_or(0.0);
+        // Use subtotal amount as the reference “MRP” when compare-at price is unavailable in the input query.
+        let mrp_value = selling_price;
 
         let discounted_mrp = mrp_value * 0.75;
 
@@ -86,12 +73,12 @@ fn cart_lines_discounts_generate_run(
                     value: ProductDiscountCandidateValue::FixedAmount(
                         ProductDiscountCandidateFixedAmount {
                             amount: Decimal(discount_amount),
-                            appliesToEachItem: false,
+                            applies_to_each_item: false,
                         },
                     ),
-                    associatedDiscountCode: None,
+                    associated_discount_code: None,
                 }],
-                selectionStrategy: ProductDiscountSelectionStrategy::All,
+                selection_strategy: ProductDiscountSelectionStrategy::All,
             },
         ));
     }
