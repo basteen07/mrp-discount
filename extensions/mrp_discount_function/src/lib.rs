@@ -7,7 +7,7 @@ fn run(input: input::ResponseData) -> Result<output::FunctionRunResult> {
     let mut discounts = Vec::new();
 
     for line in input.cart.lines {
-        let selling_price = match Decimal::from_str(&line.cost.total_amount.amount) {
+        let selling_price = match Decimal::from(&line.cost.total_amount.amount) {
             Ok(v) => v,
             Err(_) => continue,
         };
@@ -16,7 +16,7 @@ fn run(input: input::ResponseData) -> Result<output::FunctionRunResult> {
             input::CartLineMerchandise::ProductVariant(variant) => {
                 variant
                     .compare_at_price
-                    .and_then(|p| Decimal::from_str(&p.amount).ok())
+                    .and_then(|p| Decimal::from(&p.amount).ok())
             }
             _ => None,
         };
@@ -26,7 +26,7 @@ fn run(input: input::ResponseData) -> Result<output::FunctionRunResult> {
             None => continue,
         };
 
-        let discounted_mrp = mrp * Decimal::from_str("0.75").unwrap();
+        let discounted_mrp = mrp * Decimal::from("0.75").unwrap();
 
         if selling_price <= discounted_mrp {
             continue;

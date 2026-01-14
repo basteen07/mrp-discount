@@ -7,5 +7,5 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-shopify_function = "0.6"
+shopify_function = "2.0"
 serde = { version = "1.0", features = ["derive"] }

@@ -18,6 +18,9 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli
+
       - name: Cache Cargo
         uses: actions/cache@v4
         with:
@@ -26,6 +29,10 @@ jobs:
             ~/.cargo/git
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build Shopify Function Types
+        working-directory: extensions/mrp_discount_function
+        run: shopify app function build
 
       - name: Build Shopify Function
         working-directory: extensions/mrp_discount_function
