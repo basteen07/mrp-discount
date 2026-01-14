@@ -1,2 +1,4 @@
-use shopify_function::prelude::*;
-use shopify_function::Result;
+mod schema;
+
+mod cart_lines_discounts_generate_run;
+mod cart_delivery_options_discounts_generate_run;
