@@ -3,10 +3,9 @@ name = "mrp-discount-function"
 version = "1.0.0"
 edition = "2021"
 
-[dependencies]
-shopify_function = "2.0.2"
+[lib]
+crate-type = ["cdylib"]
 
-[profile.release]
-lto = true
-opt-level = "z"
-strip = true
+[dependencies]
+shopify_function = "0.6"
+serde = { version = "1.0", features = ["derive"] }
