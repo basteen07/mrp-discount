@@ -28,12 +28,12 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Build Shopify Function
-        working-directory: extensions/mrp_discount_function
+        working-directory: extensions/mrp-discount-function
         run: |
           cargo build --release --target wasm32-unknown-unknown
 
       - name: Upload WASM artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mrp_discount_function-wasm
-          path: extensions/mrp_discount_function/target/wasm32-unknown-unknown/release/*.wasm
+          name: mrp-discount-function-wasm
+          path: extensions/mrp-discount-function/target/wasm32-unknown-unknown/release/*.wasm
