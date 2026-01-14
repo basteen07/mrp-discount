@@ -1,12 +1,11 @@
-name: Build Shopify Function (Rust)
+name: Build & Deploy Shopify Function (Rust)
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
 
 jobs:
-  build-function:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,9 +17,6 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - name: Install Shopify CLI
-        run: npm install -g @shopify/cli
-
       - name: Cache Cargo
         uses: actions/cache@v4
         with:
@@ -30,17 +26,17 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Build Shopify Function Types
-        working-directory: extensions/mrp_discount_function
-        run: shopify app function build
-
       - name: Build Shopify Function
-        working-directory: extensions/mrp_discount_function
+        working-directory: extensions/mrp-discount-function
         run: |
           cargo build --release --target wasm32-unknown-unknown
 
-      - name: Upload WASM artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: mrp-discount-function-wasm
-          path: extensions/mrp_discount_function/target/wasm32-unknown-unknown/release/*.wasm
+      - name: Install Node & Shopify CLI
+        run: |
+          npm install -g @shopify/cli
+
+      - name: Deploy Shopify App
+        env:
+          SHOPIFY_CLI_TOKEN: ${{ secrets.SHOPIFY_CLI_TOKEN }}
+        run: |
+          shopify app deploy --force --no-interactive
