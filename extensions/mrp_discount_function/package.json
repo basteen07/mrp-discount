@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "function-build": "shopify app function typegen && cargo build --target=wasm32-unknown-unknown --release"
+    "function-build": "cargo build --target=wasm32-unknown-unknown --release"
   },
   "devDependencies": {
     "@shopify/shopify-function-test-helpers": "^1.0.0",
