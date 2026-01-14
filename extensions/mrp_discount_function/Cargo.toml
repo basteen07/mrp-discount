@@ -5,6 +5,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
+path = "src/main.rs"
 
 [dependencies]
 shopify_function = "0.6"
