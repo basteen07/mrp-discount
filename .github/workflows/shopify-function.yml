@@ -26,8 +26,8 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Build Shopify Function
-        working-directory: extensions/mrp-discount-function
+      - name: Build Shopify Function (Rust → WASM)
+        working-directory: extensions/mrp_discount_function
         run: |
           cargo build --release --target wasm32-unknown-unknown
 
@@ -40,3 +40,9 @@ jobs:
           SHOPIFY_CLI_TOKEN: ${{ secrets.SHOPIFY_CLI_TOKEN }}
         run: |
           shopify app deploy --force --no-interactive
+
+      - name: Upload WASM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mrp-discount-function-wasm
+          path: extensions/mrp_discount_function/target/wasm32-unknown-unknown/release/*.wasm
