@@ -14,10 +14,16 @@ jobs:
       CI: true
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install Node & Shopify CLI
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install WASM target
+        run: |
+          rustup target add wasm32-unknown-unknown
+
+      - name: Install Shopify CLI
         run: |
           npm install -g @shopify/cli
 
