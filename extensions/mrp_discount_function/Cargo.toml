@@ -1,5 +1,5 @@
 [package]
-name = "mrp_discount_function"
+name = "mrp-discount-function"
 version = "1.0.0"
 edition = "2021"
 
