@@ -7,14 +7,6 @@ query Input {
           amount
         }
       }
-      merchandise {
-        __typename
-        ... on ProductVariant {
-          compareAtPrice {
-            amount
-          }
-        }
-      }
     }
   }
   discount {
